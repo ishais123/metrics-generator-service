@@ -1,0 +1,29 @@
+deployment:
+  replicas: 3
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"
+  livenessProbe:
+    path: /alive
+  readinessProbe:
+    path: /health
+
+image:
+  repository: ishais/metrics-generator
+  pullPolicy: IfNotPresent
+  tag: v1
+
+service:
+  type: ClusterIP
+  port: 5001
+
+autoscaling:
+  minReplicas: 3
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
