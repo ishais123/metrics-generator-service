@@ -28,15 +28,13 @@ Deploy kube-prometheus-stuck helm chart
 ```bash
  helm upgrade -install kube-prometheus-stack \
   prometheus-community/kube-prometheus-stack \
-  --set grafana.service.type=LoadBalancer \
   --set kubeStateMetrics.enabled=false \
   --set alertmanager.enabled=false \
   --set nodeExporter.enabled=false \
   --create-namespace \
   -nmonitoring
-
 ```
-
+* If you want to expose grafana outside the cluster, consider to set grafana service type to LoadBalancer or use ingress (make sure you configured all related external LoadBalancer configuration base on your cloud provider)
 Expose Grafana UI locally
 
 ```bash
@@ -46,6 +44,13 @@ Expose Grafana UI locally
 Get Grafana UI credentials
 
 ```bash
-  kubectl get secret kube-prometheus-stack-grafana  -nmonitoring -o jsonpath="{.data.admin-user}" | base64 -d 
-  kubectl get secret kube-prometheus-stack-grafana  -nmonitoring -o jsonpath="{.data.admin-password}" | base64 -d
+  kubectl get secret \
+  kube-prometheus-stack-grafana  \
+  -nmonitoring \
+  -o jsonpath="{.data.admin-user}" | base64 -d
+
+  kubectl get secret \
+  kube-prometheus-stack-grafana \
+  -nmonitoring \
+  -o jsonpath="{.data.admin-password}" | base64 -d
 ```
