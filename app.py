@@ -19,27 +19,35 @@ APP_ROUTES: dict = {
 }
 
 
+class MetricsGeneratorError(BaseException):
+    """Raise for metrics generator service exceptions"""
+
+
 if __name__ == '__main__':
 
-    app: Flask = Flask(__name__)
-    metrics: PrometheusMetrics = PrometheusMetrics(app)
+    try:
+        app: Flask = Flask(__name__)
+        metrics: PrometheusMetrics = PrometheusMetrics(app)
 
-    by_path_counter = metrics.counter(
-        'by_path_counter', 'Request count by request paths',
-        labels={'path': lambda: request.path}
-    )
-
-
-    @app.route(APP_ROUTES.get('health'))
-    @by_path_counter
-    def health() -> tuple[Response, int]:
-        return jsonify({"healthy": "true"}), 200
+        by_path_counter = metrics.counter(
+            'by_path_counter', 'Request count by request paths',
+            labels={'path': lambda: request.path}
+        )
 
 
-    @app.route(APP_ROUTES.get('alive'))
-    @by_path_counter
-    def alive() -> tuple[Response, int]:
-        return jsonify({"alive": "true"}), 200
+        @app.route(APP_ROUTES.get('health'))
+        @by_path_counter
+        def health() -> tuple[Response, int]:
+            return jsonify({"healthy": "true"}), 200
 
 
-    app.run(host=APP_HOST, port=APP_PORT)
+        @app.route(APP_ROUTES.get('alive'))
+        @by_path_counter
+        def alive() -> tuple[Response, int]:
+            return jsonify({"alive": "true"}), 200
+
+
+        app.run(host=APP_HOST, port=APP_PORT)
+
+    except Exception as e:
+        raise MetricsGeneratorError(f'Failed to run metrics generator service due the following error: {e}')
