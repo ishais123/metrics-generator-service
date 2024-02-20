@@ -8,7 +8,7 @@ Metrics-enerator service is a service wrriten with Python which listen to HTTP r
 
 To build new service's image run:
 
-* Make sure you logged in to ishais123 docker hub registry, Use 'docker login' command.
+* Make sure you logged in to ishais docker hub registry, Use 'docker login' command.
 ```bash
 bash scripts/build.sh <app-version>
 ```
